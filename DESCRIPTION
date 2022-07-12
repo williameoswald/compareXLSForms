@@ -1,12 +1,23 @@
 Package: compareXLSForms
-Title: What the Package Does (One Line, Title Case)
+Title: Identify differences between two XLSForm files
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("William", "Oswald", , "william.oswald@lshtm.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5287-2834"))
+Description: Package imports the "survey" sheet from two specified XLSForm files and conducts a number of comparison checks to faciliate form version control:
+1) Compare content - list items not present in both survey sheets
+2) Get row number for each item in form 1 relative to same item's position in form 2
+3) Compare type per name
+4) Compare calculation fields for calculate items
+5) Compare all constraint fields
+6) Compare all relevance fields
+7) Compare English labels
+8) Compare English constraint messages
+9) Compare English hints
+10) Compare Other language labels
+11) Compare Other language constraint messages
+12) Compare Other language constraint messages
+License: CC BY 4.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
