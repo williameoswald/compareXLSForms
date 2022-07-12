@@ -12,7 +12,7 @@
 compare_survey <- function(form1, form2, language){
 
   # Import forms, flags row numbers, keeps selected variables, and renames any groups or repeats with same name value to make unique using order number
-  survey1 <- read_xlsx(form1location, sheet="survey") %>%
+  survey1 <- read_xlsx(form1, sheet="survey") %>%
     rename_all(tolower) %>%
     filter(!is.na(name)) %>%
     mutate(rownbr = 1:n()) %>%
@@ -29,7 +29,7 @@ compare_survey <- function(form1, form2, language){
                TRUE ~ name)) %>%
     ungroup()
 
-  survey2 <- read_xlsx(form2location, sheet="survey") %>%
+  survey2 <- read_xlsx(form2, sheet="survey") %>%
     rename_all(tolower) %>%
     filter(!is.na(name)) %>%
     mutate(rownbr = 1:n()) %>%
