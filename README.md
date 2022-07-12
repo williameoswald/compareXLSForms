@@ -14,7 +14,6 @@ library("compareXLSForms")
 library("tidyverse")
 library("readxl")
 library("flextable")
-
 ```
 
 ## Your inputs
