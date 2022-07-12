@@ -14,7 +14,6 @@ library("compareXLSForms")
 library("tidyverse")
 library("readxl")
 library("flextable")
-
 ```
 
 ## Your inputs
@@ -67,4 +66,4 @@ Please contact [me](https://www.lshtm.ac.uk/aboutus/people/oswald.william) with 
 
 ## License
 
-compare_xlsform script is made available for use under a CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+Available for use under a CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
