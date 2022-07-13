@@ -1,6 +1,6 @@
 Package: compareXLSForms
 Title: Identify differences between two XLSForm files
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("William", "Oswald", , "william.oswald@lshtm.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5287-2834"))
