@@ -83,7 +83,8 @@ compare_survey <- function(form1, form2, language){
   cat(crayon::bold(crayon::blue(print("Check 3 - Compare type per name\n"))))
   types_different <- compare %>%
     filter(type.x!=type.y) %>%
-    select(name,type.x,type.y)
+    select(name,type.x,type.y) %>%
+    relocate(name, .before = type.x)
 
   if (nrow(types_different)>0) {
     print("Discrepancies exist in type for fields with same name:")
