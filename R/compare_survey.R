@@ -12,13 +12,13 @@
 compare_survey <- function(form1, form2, language){
 
   # Import forms, flags row numbers, keeps selected variables, and renames any groups or repeats with same name value to make unique using order number
-  survey1 <- read_xlsx(form1, sheet="survey") %>%
-    rename_all(tolower) %>%
-    filter(!is.na(name)) %>%
-    mutate(rownbr = 1:n()) %>%
-    select(-"required message", -"read only", -contains("media"), -minimum_seconds, -note, -response_note) %>%
-    group_by(name) %>%
-    mutate(flag_dup_row =
+  survey1 <- readxl::read_xlsx(form1, sheet="survey") %>%
+    dplyr::rename_all(tolower) %>%
+    dplyr::filter(!is.na(name)) %>%
+    dplyr::mutate(rownbr = 1:n()) %>%
+    dplyr::select(-"required message", -"read only", -contains("media"), -minimum_seconds, -note, -response_note) %>%
+    dplyr::group_by(name) %>%
+    dplyr::mutate(flag_dup_row =
              case_when(
                n()>1 ~ 1L,
                TRUE ~ 0L),
@@ -27,33 +27,33 @@ compare_survey <- function(form1, form2, language){
              case_when(
                flag_dup_row==1 ~ paste0(name,"_",dup_row_seq),
                TRUE ~ name)) %>%
-    ungroup()
+    dplyr::ungroup()
 
-  survey2 <- read_xlsx(form2, sheet="survey") %>%
-    rename_all(tolower) %>%
-    filter(!is.na(name)) %>%
-    mutate(rownbr = 1:n()) %>%
-    select(-"required message", -"read only", -contains("media"), -minimum_seconds, -note, -response_note) %>%
-    group_by(name) %>%
-    mutate(flag_dup_row =
-             case_when(
-               n()>1 ~ 1L,
-               TRUE ~ 0L),
-           dup_row_seq = 1:n(),
-           name =
-             case_when(
-               flag_dup_row==1 ~ paste0(name,"_",dup_row_seq),
-               TRUE ~ name)) %>%
-    ungroup()
+  survey2 <- readxl::read_xlsx(form2, sheet="survey") %>%
+    dplyr::rename_all(tolower) %>%
+    dplyr::filter(!is.na(name)) %>%
+    dplyr::mutate(rownbr = 1:n()) %>%
+    dplyr::select(-"required message", -"read only", -contains("media"), -minimum_seconds, -note, -response_note) %>%
+    dplyr::group_by(name) %>%
+    dplyr::mutate(flag_dup_row =
+                    case_when(
+                      n()>1 ~ 1L,
+                      TRUE ~ 0L),
+                  dup_row_seq = 1:n(),
+                  name =
+                    case_when(
+                      flag_dup_row==1 ~ paste0(name,"_",dup_row_seq),
+                      TRUE ~ name)) %>%
+    dplyr::ungroup()
 
   # Compare survey sheet
-  compare <- full_join(survey1, survey2, by="name")
+  compare <- dplyr::full_join(survey1, survey2, by="name")
 
   cat(crayon::bold(crayon::blue(print("Check 1 - Compare content - list items not present in both survey sheets\n"))))
-  survey1_items <- survey1 %>% select(name) %>% unlist
-  survey2_items <- survey2 %>% select(name) %>% unlist
+  survey1_items <- survey1 %>% dplyr::select(name) %>% unlist
+  survey2_items <- survey2 %>% dplyr::select(name) %>% unlist
 
-  items_different <- as_tibble(bind_cols(difference = setdiff(survey1_items,survey2_items),
+  items_different <- dplyr::as_tibble(dplyr::bind_cols(difference = setdiff(survey1_items,survey2_items),
                                          in_survey1 = is.element(setdiff(survey1_items,survey2_items),survey1_items),
                                          in_survey2 = is.element(setdiff(survey1_items,survey2_items),survey2_items)))
 
@@ -67,10 +67,10 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 2 - Get row number for each item in form 1 relative to same item's position in form 2\n"))))
   position_different <- compare %>%
-    filter(!is.na(rownbr.x)) %>%
-    mutate(position_difference=rownbr.x-rownbr.y) %>%
-    select(name,rownbr.x,position_difference) %>%
-    filter(position_difference!=0)
+    dplyr::filter(!is.na(rownbr.x)) %>%
+    dplyr::mutate(position_difference=rownbr.x-rownbr.y) %>%
+    dplyr::select(name,rownbr.x,position_difference) %>%
+    dplyr::filter(position_difference!=0)
 
   if (length(position_different)>0) {
     print("Differences between survey 1 item positions and survey 2:")
@@ -82,9 +82,9 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 3 - Compare type per name\n"))))
   types_different <- compare %>%
-    filter(type.x!=type.y) %>%
-    select(name,type.x,type.y) %>%
-    relocate(name, .before = type.x)
+    dplyr::filter(type.x!=type.y) %>%
+    dplyr::select(name,type.x,type.y) %>%
+    dplyr::relocate(name, .before = type.x)
 
   if (nrow(types_different)>0) {
     print("Discrepancies exist in type for fields with same name:")
@@ -96,9 +96,9 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 4 - Compare calculation fields for calculate row\n"))))
   calc_different <- full_join(survey1, survey2, by=c("type","name")) %>%
-    filter(type=="calculate",
+    dplyr::filter(type=="calculate",
            calculation.x!=calculation.y) %>%
-    select(type,name,calculation.x,calculation.y)
+    dplyr::select(type,name,calculation.x,calculation.y)
 
   if (nrow(calc_different)>0) {
     print("Discrepancies exist in calculation fields for specified items")
@@ -110,10 +110,10 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 5 - Compare all constraint fields\n"))))
   constraint_different <- compare %>%
-    filter(!is.na(constraint.x),
+    dplyr::filter(!is.na(constraint.x),
            !is.na(constraint.y),
            constraint.x!=constraint.y) %>%
-    select(name,constraint.x,constraint.y)
+    dplyr::select(name,constraint.x,constraint.y)
 
   if (nrow(constraint_different)>0) {
     print("Discrepancies exist in constraint fields for specified items")
@@ -140,10 +140,10 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 7 - Compare English labels\n"))))
   labels_different <- compare %>%
-    filter(!is.na(`label:english.x`),
+    dplyr::filter(!is.na(`label:english.x`),
            !is.na(`label:english.y`),
            `label:english.x`!=`label:english.y`) %>%
-    select(name,`label:english.x`,`label:english.y`)
+    dplyr::select(name,`label:english.x`,`label:english.y`)
 
   if (nrow(labels_different)>0) {
     print("Discrepancies exist in English labels for specified items")
@@ -155,10 +155,10 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 8 - Compare English constraint messages\n"))))
   consmess_different <- compare %>%
-    filter(!is.na(`constraint message:english.x`),
+    dplyr::filter(!is.na(`constraint message:english.x`),
            !is.na(`constraint message:english.y`),
            `constraint message:english.x`!=`constraint message:english.y`) %>%
-    select(name,`constraint message:english.x`,`constraint message:english.y`)
+    dplyr::select(name,`constraint message:english.x`,`constraint message:english.y`)
 
   if (nrow(consmess_different)>0) {
     print("Discrepancies exist in English constraint messages for specified items")
@@ -170,10 +170,10 @@ compare_survey <- function(form1, form2, language){
 
   cat(crayon::bold(crayon::blue(print("Check 9 - Compare English hints\n"))))
   hint_different <- compare %>%
-    filter(!is.na(`hint:english.x`),
+    dplyr::filter(!is.na(`hint:english.x`),
            !is.na(`hint:english.y`),
            `hint:english.x`!=`hint:english.y`) %>%
-    select(name,`hint:english.x`,`hint:english.y`)
+    dplyr::select(name,`hint:english.x`,`hint:english.y`)
 
   if (nrow(hint_different)>0) {
     print("Discrepancies exist in English constraint messages for specified items")
@@ -189,10 +189,10 @@ compare_survey <- function(form1, form2, language){
     labely <- sym(paste0("label:",tolower(language),".y"))
 
     otherlabels_different <- compare %>%
-      filter(!is.na(!!labelx),
+      dplyr::filter(!is.na(!!labelx),
              !is.na(!!labely),
              !!labelx!=!!labely) %>%
-      select(name,!!labelx,!!labely)
+      dplyr::select(name,!!labelx,!!labely)
 
     if (nrow(otherlabels_different)>0) {
       print("Discrepancies exist in labels for specified items")
@@ -207,10 +207,10 @@ compare_survey <- function(form1, form2, language){
     constrainty <- sym(paste0("constraint message:",tolower(language),".y"))
 
     otherconsmess_different <- compare %>%
-      filter(!is.na(!!constraintx),
+      dplyr::filter(!is.na(!!constraintx),
              !is.na(!!constrainty),
              !!constraintx!=!!constrainty) %>%
-      select(name,!!constraintx,!!constrainty)
+      dplyr::select(name,!!constraintx,!!constrainty)
 
     if (nrow(otherconsmess_different)>0) {
       print("Discrepancies exist in constraint messages for specified items")
@@ -225,10 +225,10 @@ compare_survey <- function(form1, form2, language){
     hinty <- sym(paste0("hint:",tolower(language),".y"))
 
     otherhint_different <- compare %>%
-      filter(!is.na(!!hintx),
+      dplyr::filter(!is.na(!!hintx),
              !is.na(!!hinty),
              !!hintx!=!!hinty) %>%
-      select(name,!!hintx,!!hinty)
+      dplyr::select(name,!!hintx,!!hinty)
 
     if (nrow(otherhint_different)>0) {
       print("Discrepancies exist in hints for specified items")
