@@ -17,11 +17,12 @@ library("flextable")
 ```
 
 ## Your inputs
+
+Please ensure the "label", "hint", "constraint message" columns are named "label:English", "hint:English", and "constraint message:English". Additional language columns (only one additional language at a time for now) can be examined by specifying them as a third argument according to how the language is named in the form (e.g. "Francais" for label:Francais).
+
 ```{r}
 form1location <- "filepath to first XLSForm here"
 form2location <- "filepath to second XLSForm here"
-
-Note - Please ensure the "label", "hint", "constraint message" columns are named "label:English", "hint:English", and "constraint message:English". Additional language columns (only one additional language at a time for now) can be examined by specifying them as a third argument according to how the language is named in the form (e.g. "Francais" for label:Francais).
 
 # Name output of function "full_compare""
 full_compare <- compare_survey(form1location,form2location,language)
